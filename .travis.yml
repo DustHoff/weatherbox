@@ -6,3 +6,5 @@ deploy:
   api_key: $deployToken
   file: "target/weatherbox*.jar"
   skip_cleanup: true
+  on:
+    complete: true
