@@ -4,11 +4,9 @@ jdk:
 deploy:
   provider: releases
   api_key: $deployToken
-  file: "target/weatherbox.*.jar"
+  file: target/weatherbox.*.jar
   skip_cleanup: true
   on:
     tags: true
 notifications:
-  DustHoff:
-    on_success: never
-    on_failure: never
+  email: false
