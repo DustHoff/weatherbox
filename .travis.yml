@@ -1,11 +1,10 @@
 language: java
 jdk:
   - oraclejdk8
-before_deploy: cd target
 deploy:
   provider: releases
   api_key: $deployToken
-  file: weatherbox.jar
+  file: target/weatherbox.jar
   skip_cleanup: true
   on:
     tags: true
