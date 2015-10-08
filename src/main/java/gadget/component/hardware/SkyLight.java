@@ -4,6 +4,7 @@ import com.tinkerforge.BrickletLEDStrip;
 import com.tinkerforge.IPConnection;
 import com.tinkerforge.NotConnectedException;
 import com.tinkerforge.TimeoutException;
+import gadget.component.hardware.data.SkyLightType;
 
 /**
  * Created by Dustin on 03.09.2015.
@@ -11,7 +12,7 @@ import com.tinkerforge.TimeoutException;
 public class SkyLight extends HardwareComponent implements BrickletLEDStrip.FrameRenderedListener {
     private BrickletLEDStrip device;
     private boolean lightning = false;
-    private Type type;
+    private SkyLightType skyLightType;
     private int lednum;
 
     @Override
@@ -35,14 +36,14 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
 
     @Override
     public String getValue() {
-        return type.red + "," + type.green + "," + type.blue;
+        return skyLightType.getRed() + "," + skyLightType.getGreen() + "," + skyLightType.getBlue();
     }
 
     @Override
     public void setValue(String value) {
         String[] rgb = value.split(",");
-        type=Type.FADED;
-        type.modify(Short.parseShort(rgb[0]),Short.parseShort(rgb[1]),Short.parseShort(rgb[2]));
+        skyLightType = SkyLightType.FADED;
+        skyLightType.modify(Short.parseShort(rgb[0]), Short.parseShort(rgb[1]), Short.parseShort(rgb[2]));
     }
 
     private short[] getColorArray(short num) {
@@ -69,8 +70,8 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
     }
 
     public void frameRendered(int i) {
-        if (type == null) return;
-        setRGB(getColorArray(type.getBlue()), getColorArray(type.getGreen()), getColorArray(type.getRed()));
+        if (skyLightType == null) return;
+        setRGB(getColorArray(skyLightType.getBlue()), getColorArray(skyLightType.getGreen()), getColorArray(skyLightType.getRed()));
         double rand = Math.random();
         if (lightning && rand > 0.48d && rand < 0.52d) {
             int light = (int) ((lednum / 2) * 0.4d);
@@ -84,67 +85,11 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
         this.lightning = lightning;
     }
 
-    public Type getType() {
-        return type;
+    public SkyLightType getSkyLightType() {
+        return skyLightType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-    }
-
-    public enum Type {
-        RISE((short) 253, (short) 40, (short) 1),
-        DAY((short) 102, (short) 134, (short) 170),
-        NIGHT((short) 0, (short) 0, (short) 20),
-        THUNDER((short) 0, (short) 24, (short) 72),
-        FADED((short) 0, (short) 0, (short) 0);
-
-        private short red;
-        private short green;
-        private short blue;
-
-        Type(short red, short green, short blue) {
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-        }
-
-        public Type fade(Type fadeTo, int percentage) {
-            short red = 0, green = 0, blue = 0;
-            if (percentage >= 100) return fadeTo;
-            if (percentage == 0) return this;
-            int rest = 100 - percentage;
-            red += (short) ((this.red * rest) + (fadeTo.red * percentage)) / 100;
-            green += (short) ((this.green * rest) + (fadeTo.green * percentage)) / 100;
-            blue += (short) ((this.blue * rest) + (fadeTo.blue * percentage)) / 100;
-            Type faded = Type.FADED;
-            faded.modify(red, green, blue);
-            return faded;
-        }
-
-        private void modify(short red, short green, short blue) {
-            if (!this.equals(FADED)) return;
-            this.red = red;
-            this.green = green;
-            this.blue = blue;
-        }
-
-
-        @Override
-        public String toString() {
-            return name() + " RGB(" + red + "," + green + "," + blue + ")";
-        }
-
-        public short getBlue() {
-            return blue;
-        }
-
-        public short getGreen() {
-            return green;
-        }
-
-        public short getRed() {
-            return red;
-        }
+    public void setSkyLightType(SkyLightType SkyLightType) {
+        this.skyLightType = SkyLightType;
     }
 }

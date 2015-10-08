@@ -5,6 +5,7 @@ import gadget.component.HardwareRegistry;
 import gadget.component.hardware.Clouds;
 import gadget.component.hardware.Rain;
 import gadget.component.hardware.SkyLight;
+import gadget.component.hardware.data.SkyLightType;
 import gadget.component.owm.OWM;
 import gadget.component.owm.generated.TimeForecast;
 import gadget.component.owm.generated.Weatherdata;
@@ -73,10 +74,10 @@ public class WeatherUpdater extends Component implements Job {
         LocalTime sunrise = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         c = sun.getSet().toGregorianCalendar();
         LocalTime sunset = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-        SkyLight.Type type = null;
+        SkyLightType type = null;
 
-        if (sunrise.isBefore(now) && sunset.isAfter(now)) type = SkyLight.Type.DAY;
-        else type = SkyLight.Type.NIGHT;
+        if (sunrise.isBefore(now) && sunset.isAfter(now)) type = SkyLightType.DAY;
+        else type = SkyLightType.NIGHT;
 
         /**
          sunrise start
@@ -88,13 +89,13 @@ public class WeatherUpdater extends Component implements Job {
                 long percent = ((datediff(now, sunrise) * 100L) / 90L);
                 percent = 100 - percent;
                 System.out.println("percent = " + percent);
-                type = SkyLight.Type.NIGHT.fade(SkyLight.Type.RISE, (int) percent);
+                type = SkyLightType.NIGHT.fade(SkyLightType.RISE, (int) percent);
             }
             if (datediff(now, sunrise) > -90L && datediff(now, sunrise) <= 0L) {
                 long percent = ((datediff(now, sunrise) * 100L) / 90L);
                 percent = percent * -1;
                 System.out.println("percent = " + percent);
-                type = SkyLight.Type.RISE.fade(SkyLight.Type.DAY, (int) percent);
+                type = SkyLightType.RISE.fade(SkyLightType.DAY, (int) percent);
             }
         }
         /**
@@ -110,7 +111,7 @@ public class WeatherUpdater extends Component implements Job {
                 long percent = ((datediff(now, sunset) * 100L) / 90L);
                 percent = 100 - percent;
                 System.out.println("percent = " + percent);
-                type = SkyLight.Type.DAY.fade(SkyLight.Type.RISE, (int) percent);
+                type = SkyLightType.DAY.fade(SkyLightType.RISE, (int) percent);
             }
 
             System.out.println("sunset = " + sunset + ", now = " + now + ", diff = " + datediff(now, sunset));
@@ -118,13 +119,13 @@ public class WeatherUpdater extends Component implements Job {
                 long percent = ((datediff(now, sunset) * 100L) / 90L);
                 percent = percent * -1;
                 System.out.println("percent = " + percent);
-                type = SkyLight.Type.RISE.fade(SkyLight.Type.NIGHT, (int) percent);
+                type = SkyLightType.RISE.fade(SkyLightType.NIGHT, (int) percent);
             }
         }
         /**
          sunset end
          */
-        ((SkyLight) HardwareRegistry.get().getComponent("SkyLight")).setType(type);
+        ((SkyLight) HardwareRegistry.get().getComponent("SkyLight")).setSkyLightType(type);
         System.out.println(type);
     }
 

@@ -1,6 +1,7 @@
 package gadget.component.hardware;
 
 import com.tinkerforge.*;
+import gadget.component.hardware.data.CloudType;
 
 /**
  * Created by Dustin on 03.09.2015.
@@ -9,7 +10,7 @@ public class Clouds extends HardwareComponent {
     private BrickServo fan;
     private BrickletDualRelay mister;
     private BrickServo.Degree degree;
-    private Type type;
+    private CloudType type;
 
     @Override
     public Integer[] identifierList() {
@@ -38,7 +39,7 @@ public class Clouds extends HardwareComponent {
         return (mister != null && fan != null) ? State.RUN : State.BOOT;
     }
 
-    public void setType(Type type) {
+    public void setType(CloudType type) {
         this.type = type;
         try {
             switch (type) {
@@ -65,7 +66,7 @@ public class Clouds extends HardwareComponent {
 
     @Override
     public void setValue(String value) {
-        type = Type.valueOf(value);
+        type = CloudType.valueOf(value);
         setType(type);
     }
 
@@ -75,28 +76,10 @@ public class Clouds extends HardwareComponent {
     }
 
     public void setValue(int value) {
-        try {
-            if (value > 0) {
-                mister.setSelectedState((short) 1, true);
-                fan.setPosition(degree.servoNum, (short) (degree.max - (degree.max * value / 100)));
-            } else {
-                mister.setSelectedState((short) 1, false);
-                fan.setPosition(degree.servoNum, degree.min);
-            }
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
-        }
-
-       /* if (value<15)
-            setType(Type.NONE);
-        else if (value>=15 && value<75)
-            setType(Type.CLOUDY);
-        else setType(Type.FOG);*/
-    }
-
-    public enum Type {
-        NONE, CLOUDY, FOG
+        if (value < 15)
+            setType(CloudType.NONE);
+        else if (value >= 15 && value < 75)
+            setType(CloudType.CLOUDY);
+        else setType(CloudType.FOG);
     }
 }

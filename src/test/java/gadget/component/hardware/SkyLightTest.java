@@ -1,6 +1,7 @@
 package gadget.component.hardware;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import gadget.component.hardware.data.SkyLightType;
 import gadget.component.owm.generated.TimeForecast;
 import gadget.component.owm.generated.Weatherdata;
 import gadget.weatherbox.job.WeatherUpdater;
@@ -25,8 +26,8 @@ public class SkyLightTest extends HardwareRegistryTest {
     @Before
     public void setup() {
         SkyLight skyLight = Mockito.mock(SkyLight.class);
-        doCallRealMethod().when(skyLight).setType(any(SkyLight.Type.class));
-        doCallRealMethod().when(skyLight).getType();
+        doCallRealMethod().when(skyLight).setSkyLightType(any(SkyLightType.class));
+        doCallRealMethod().when(skyLight).getSkyLightType();
         when(registry.getComponent("SkyLight")).thenReturn(skyLight);
     }
 
@@ -43,7 +44,7 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        Assert.assertEquals(SkyLight.Type.DAY, ((SkyLight) registry.getComponent("SkyLight")).getType());
+        Assert.assertEquals(SkyLightType.DAY, ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType());
     }
 
     @Test
@@ -60,8 +61,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.DAY.fade(SkyLight.Type.RISE, 77);
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.DAY.fade(SkyLightType.RISE, 77);
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -83,8 +84,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.RISE;
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.RISE;
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -106,8 +107,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.RISE.fade(SkyLight.Type.NIGHT, 33);
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.RISE.fade(SkyLightType.NIGHT, 33);
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -118,8 +119,8 @@ public class SkyLightTest extends HardwareRegistryTest {
         updater = new WeatherUpdater(clock);
         updater.updateSkyLight(forecast, sun);
 
-        type = SkyLight.Type.RISE.fade(SkyLight.Type.NIGHT, 88);
-        result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        type = SkyLightType.RISE.fade(SkyLightType.NIGHT, 88);
+        result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -142,8 +143,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.DAY.fade(SkyLight.Type.RISE, 77);
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.DAY.fade(SkyLightType.RISE, 77);
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -165,8 +166,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.RISE;
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.RISE;
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -188,8 +189,8 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        SkyLight.Type type = SkyLight.Type.RISE.fade(SkyLight.Type.DAY, 77);
-        SkyLight.Type result = ((SkyLight) registry.getComponent("SkyLight")).getType();
+        SkyLightType type = SkyLightType.RISE.fade(SkyLightType.DAY, 77);
+        SkyLightType result = ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType();
 
         Assert.assertEquals("ENUM", type, result);
         Assert.assertEquals("Red", type.getRed(), result.getRed());
@@ -212,6 +213,6 @@ public class SkyLightTest extends HardwareRegistryTest {
 
         updater.updateSkyLight(forecast, sun);
 
-        Assert.assertEquals(SkyLight.Type.NIGHT, ((SkyLight) registry.getComponent("SkyLight")).getType());
+        Assert.assertEquals(SkyLightType.NIGHT, ((SkyLight) registry.getComponent("SkyLight")).getSkyLightType());
     }
 }

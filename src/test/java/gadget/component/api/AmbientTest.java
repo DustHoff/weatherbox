@@ -6,6 +6,8 @@ import gadget.component.api.data.Response;
 import gadget.component.hardware.Clouds;
 import gadget.component.hardware.Rain;
 import gadget.component.hardware.SkyLight;
+import gadget.component.hardware.data.CloudType;
+import gadget.component.hardware.data.SkyLightType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,12 +43,12 @@ public class AmbientTest extends ApiRegistryTest {
     public void getClouds() throws Throwable {
         Clouds clouds = Mockito.mock(Clouds.class);
         when(HardwareRegistry.get().getComponent("clouds")).thenReturn(clouds);
-        when(clouds.getValue()).thenReturn(Clouds.Type.NONE.name());
+        when(clouds.getValue()).thenReturn(CloudType.NONE.name());
 
         Response response = startGetRequest("http://localhost:8080/ambient/clouds");
         Assert.assertEquals(String.class.getName(), response.getType());
         String value = (String) response.convert();
-        Assert.assertEquals(Clouds.Type.NONE.name(), value);
+        Assert.assertEquals(CloudType.NONE.name(), value);
     }
 
     @Test
@@ -58,7 +60,7 @@ public class AmbientTest extends ApiRegistryTest {
 
         AmbientRequest request = new AmbientRequest();
         request.setComponent("clouds");
-        request.setValue(Clouds.Type.FOG.name());
+        request.setValue(CloudType.FOG.name());
 
         Response response = startPostRequest("http://localhost:8080/ambient",request);
         Assert.assertEquals(Boolean.class.getName(), response.getType());
@@ -110,14 +112,14 @@ public class AmbientTest extends ApiRegistryTest {
         SkyLight skyLight = Mockito.mock(SkyLight.class);
         when(HardwareRegistry.get().getComponent("skylight")).thenReturn(skyLight);
         doCallRealMethod().when(skyLight).setValue(anyString());
-        doCallRealMethod().when(skyLight).getType();
+        doCallRealMethod().when(skyLight).getSkyLightType();
         AmbientRequest request = new AmbientRequest();
         request.setComponent("skylight");
         request.setValue("0,100,200");
         Response response = startPostRequest("http://localhost:8080/ambient/", request);
         Assert.assertEquals(Boolean.class.getName(), response.getType());
         Assert.assertTrue((Boolean) response.convert());
-        SkyLight.Type type = skyLight.getType();
+        SkyLightType type = skyLight.getSkyLightType();
         Assert.assertEquals(0, type.getRed());
         Assert.assertEquals(100, type.getGreen());
         Assert.assertEquals(200, type.getBlue());
