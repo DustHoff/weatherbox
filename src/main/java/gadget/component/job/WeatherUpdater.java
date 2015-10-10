@@ -1,4 +1,4 @@
-package gadget.weatherbox.job;
+package gadget.component.job;
 
 import gadget.component.Component;
 import gadget.component.HardwareRegistry;
