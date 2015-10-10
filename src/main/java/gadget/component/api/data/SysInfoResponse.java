@@ -28,47 +28,43 @@ public class SysInfoResponse {
         this.mode = mode;
     }
 
-    public void setLoad(double load) {
-        this.load = load;
-    }
-
     public double getLoad() {
         return load;
     }
 
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
+    public void setLoad(double load) {
+        this.load = load;
     }
 
     public String getTemperature() {
         return temperature;
     }
 
-    public void setHumidity(String humidity) {
-        this.humidity = humidity;
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
     }
 
     public String getHumidity() {
         return humidity;
     }
 
-    public void setClouds(String clouds) {
-        this.clouds = clouds;
+    public void setHumidity(String humidity) {
+        this.humidity = humidity;
     }
 
     public String getClouds() {
         return clouds;
     }
 
-    public void setPrecipitation(String precipitation) {
-        this.precipitation = precipitation;
-    }
-
-    public void setPrecipitation(String precipitation) {
-        this.precipitation = precipitation;
+    public void setClouds(String clouds) {
+        this.clouds = clouds;
     }
 
     public String getPrecipitation() {
         return precipitation;
+    }
+
+    public void setPrecipitation(String precipitation) {
+        this.precipitation = precipitation;
     }
 }
