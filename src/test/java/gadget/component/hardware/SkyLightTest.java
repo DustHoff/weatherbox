@@ -2,9 +2,9 @@ package gadget.component.hardware;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import gadget.component.hardware.data.SkyLightType;
+import gadget.component.job.WeatherUpdater;
 import gadget.component.owm.generated.TimeForecast;
 import gadget.component.owm.generated.Weatherdata;
-import gadget.weatherbox.job.WeatherUpdater;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
