@@ -70,7 +70,8 @@ public class HardwareRegistry implements IPConnection.EnumerateListener {
         LOG.debug("Found new hardware");
         LOG.debug("uid = [" + uid + "], connectedUid = [" + connectedUid + "], position = [" + position + "], hardwareVersion = [" + hardwareVersion + "], firmwareVersion = [" + firmwareVersion + "], deviceIdentifier = [" + deviceIdentifier + "], enumerationType = [" + enumerationType + "]");
         for (HardwareComponent component : components) {
-            if (new ArrayList<Integer>(Arrays.asList(component.identifierList())).contains(deviceIdentifier)) {
+            LOG.debug("check for match " + component.getName());
+            if (new ArrayList<Integer>(Arrays.asList(component.identifierList())).contains(Integer.valueOf(deviceIdentifier))) {
                 try {
                     component.initialize(connection, uid, deviceIdentifier);
                     LOG.info(component.getName() + " changed to " + component.getState().name());
