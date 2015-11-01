@@ -1,5 +1,7 @@
 package gadget.component;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.reflections.Reflections;
@@ -12,10 +14,12 @@ import java.util.Set;
 public class JobRegistry {
 
     private static JobRegistry instance;
+    private final Logger LOG;
     private Scheduler scheduler;
     private boolean pause;
 
     private JobRegistry() {
+        LOG = LogManager.getLogger(getClass().getSimpleName());
     }
 
     public static JobRegistry get() {
@@ -28,6 +32,7 @@ public class JobRegistry {
         Set<Class<? extends Job>> jobs = reflections.getSubTypesOf(Job.class);
 
         for (Class<? extends Job> job : jobs) {
+            LOG.debug("create Job: " + job.getName());
             JobDetail jobDetail = JobBuilder.newJob(job).withIdentity(job.getSimpleName()).build();
             scheduler.scheduleJob(jobDetail, TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule("0 * * * * ?")).build());
         }
@@ -35,10 +40,12 @@ public class JobRegistry {
 
     public void start() {
         try {
-            load();
+            LOG.info("starting");
             scheduler = StdSchedulerFactory.getDefaultScheduler();
+            load();
+            scheduler.start();
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            LOG.error("Problem while starting", e);
         }
     }
 
@@ -47,7 +54,7 @@ public class JobRegistry {
             scheduler.pauseAll();
             pause = true;
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            LOG.error("Problem while pausing", e);
         }
     }
 
@@ -56,15 +63,16 @@ public class JobRegistry {
             scheduler.resumeAll();
             pause = false;
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            LOG.error("Problem while resuming", e);
         }
     }
 
     public void stop() {
         try {
+            LOG.info("stopping");
             scheduler.shutdown();
         } catch (SchedulerException e) {
-            e.printStackTrace();
+            LOG.error("Problem while stopping", e);
         }
     }
 

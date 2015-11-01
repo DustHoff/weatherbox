@@ -1,24 +1,18 @@
 package gadget.component.api;
 
 import com.google.gson.Gson;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import gadget.component.ApiRegistry;
 import gadget.component.api.data.Response;
-import gadget.component.owm.OWM;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Assert;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 /**
@@ -27,7 +21,7 @@ import java.io.StringWriter;
 public class ApiRegistryTest {
 
     private Gson gson = new Gson();
-    private CloseableHttpClient client = HttpClients.createDefault();
+    private OkHttpClient client = new OkHttpClient();
 
     @BeforeClass
     public static void start() throws Throwable {
@@ -54,36 +48,29 @@ public class ApiRegistryTest {
     }
 
     public Response startGetRequest(String url) throws Throwable {
-        CloseableHttpResponse response = null;
-        try {
-            response = client.execute(new HttpGet(url));
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(response.getEntity().getContent(), writer);
-            Response r = gson.fromJson(writer.toString(), Response.class);
-            Object data = r.convert();
+        Request request = new Request.Builder().url(url).build();
+        com.squareup.okhttp.Response response = client.newCall(request).execute();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(response.body().byteStream(), writer);
+        Response r = gson.fromJson(writer.toString(), Response.class);
+        Object data = r.convert();
 
-            if (data instanceof Throwable) throw new Exception((Throwable) data);
-            return r;
-        } finally {
-            response.close();
-        }
+        if (data instanceof Throwable) throw new Exception((Throwable) data);
+        return r;
     }
 
     public Response startPostRequest(String url, Object request) throws Throwable {
-        CloseableHttpResponse response = null;
-        try {
-            HttpPost post = new HttpPost(url);
-            post.setEntity(new StringEntity(gson.toJson(request)));
-            response = client.execute(post);
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(response.getEntity().getContent(), writer);
-            Response r = gson.fromJson(writer.toString(), Response.class);
-            Object data = r.convert();
 
-            if (data instanceof Throwable) throw new Exception((Throwable) data);
-            return r;
-        } finally {
-            response.close();
-        }
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(JSON, gson.toJson(request));
+        Request request1 = new Request.Builder().url(url).post(body).build();
+        com.squareup.okhttp.Response response = client.newCall(request1).execute();
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(response.body().byteStream(), writer);
+        Response r = gson.fromJson(writer.toString(), Response.class);
+        Object data = r.convert();
+
+        if (data instanceof Throwable) throw new Exception((Throwable) data);
+        return r;
     }
 }

@@ -1,16 +1,14 @@
 package gadget.component.owm;
 
-import gadget.component.owm.data.City;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import gadget.component.job.owm.OWM;
+import gadget.component.job.owm.data.City;
 import gadget.component.owm.generated.TimeForecast;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.*;
 
 /**
  * Created by Dustin on 30.08.2015.
@@ -26,10 +24,9 @@ public class OWMTest {
 
     @Test
     public void loadXMLFromOWM()throws Throwable {
-        CloseableHttpResponse response = HttpClients.createDefault().execute(new HttpGet("http://api.openweathermap.org/data/2.5/forecast?mode=xml&APPID=828ce75931f9fef098daf3930139f6cd&id=2856883"));
-        Assert.assertEquals("text/xml; charset=utf-8", response.getEntity().getContentType().getValue());
-        //System.out.println(new Scanner(response.getEntity().getContent()).useDelimiter("\r").next());
-        response.close();
+        Request request = new Request.Builder().url("http://api.openweathermap.org/data/2.5/forecast?mode=xml&APPID=828ce75931f9fef098daf3930139f6cd&id=2856883").build();
+        Response response = new OkHttpClient().newCall(request).execute();
+        Assert.assertEquals("text/xml; charset=utf-8", response.header("content-type"));
     }
 
     @Test

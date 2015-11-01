@@ -1,4 +1,4 @@
-package gadget.component.owm.data;
+package gadget.component.job.owm.data;
 
 /**
  * Created by Dustin on 03.10.2015.

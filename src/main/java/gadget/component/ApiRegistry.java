@@ -2,9 +2,10 @@ package gadget.component;
 
 import com.sun.net.httpserver.HttpServer;
 import gadget.component.api.ApiComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.reflections.Reflections;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Set;
 
@@ -14,35 +15,48 @@ import java.util.Set;
 public class ApiRegistry {
 
     private static ApiRegistry instance;
+    private final Logger LOG;
     private HttpServer server;
 
-    public static ApiRegistry get(){
-        if(instance==null) instance = new ApiRegistry();
+    private ApiRegistry() {
+        LOG = LogManager.getLogger(getClass().getSimpleName());
+    }
+
+    public static ApiRegistry get() {
+        if (instance == null) instance = new ApiRegistry();
         return instance;
     }
-    private void load(){
+
+    private void load() {
+        LOG.info("loading Api components");
         Reflections reflections = new Reflections("gadget.component.api");
         Set<Class<? extends ApiComponent>> api = reflections.getSubTypesOf(ApiComponent.class);
-        try {
-            for (Class<? extends ApiComponent> a : api) {
+        for (Class<? extends ApiComponent> a : api) {
+            try {
+                LOG.debug("loading api " + a.getName());
                 ApiComponent instance = a.newInstance();
-                server.createContext(instance.getContext(),instance.getHandler());
+                LOG.debug("create context " + instance.getContext());
+                server.createContext(instance.getContext(), instance.getHandler());
+            } catch (Throwable e) {
+                LOG.error("Problem while loading ", e);
             }
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 
-    public void start() throws IOException {
-        server = HttpServer.create(new InetSocketAddress(8080),0);
-        server.setExecutor(null);
-        load();
-        server.start();
+    public void start() {
+        LOG.info("starting");
+        try {
+            server = HttpServer.create(new InetSocketAddress(8080), 0);
+            server.setExecutor(null);
+            load();
+            server.start();
+        } catch (Throwable e) {
+            LOG.error("Problem while starting", e);
+        }
     }
 
-    public void stop(){
+    public void stop() {
+        LOG.info("stopping");
         server.stop(0);
     }
 }

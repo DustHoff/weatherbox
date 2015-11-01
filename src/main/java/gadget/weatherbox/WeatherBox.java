@@ -1,6 +1,5 @@
 package gadget.weatherbox;
 
-import com.tinkerforge.NotConnectedException;
 import gadget.component.ApiRegistry;
 import gadget.component.HardwareRegistry;
 import gadget.component.JobRegistry;
@@ -21,13 +20,9 @@ public class WeatherBox extends SecurityManager {
 
     @Override
     public void checkExit(int status) {
-        try {
             HardwareRegistry.get().stop();
             ApiRegistry.get().stop();
             JobRegistry.get().stop();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

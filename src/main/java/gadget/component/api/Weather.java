@@ -1,11 +1,10 @@
 package gadget.component.api;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import gadget.component.api.data.Request;
 import gadget.component.api.data.Response;
 import gadget.component.api.data.WeatherRequest;
 import gadget.component.api.data.WeatherResponse;
-import gadget.component.owm.OWM;
+import gadget.component.job.owm.OWM;
 
 /**
  * Created by Dustin on 03.10.2015.

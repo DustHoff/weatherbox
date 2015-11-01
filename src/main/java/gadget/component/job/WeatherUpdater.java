@@ -6,7 +6,7 @@ import gadget.component.hardware.Clouds;
 import gadget.component.hardware.Rain;
 import gadget.component.hardware.SkyLight;
 import gadget.component.hardware.data.SkyLightType;
-import gadget.component.owm.OWM;
+import gadget.component.job.owm.OWM;
 import gadget.component.owm.generated.TimeForecast;
 import gadget.component.owm.generated.Weatherdata;
 import org.quartz.Job;

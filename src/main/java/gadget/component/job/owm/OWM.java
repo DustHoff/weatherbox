@@ -1,17 +1,13 @@
-package gadget.component.owm;
+package gadget.component.job.owm;
 
-import com.google.gson.Gson;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import gadget.component.Component;
-import gadget.component.owm.data.City;
+import gadget.component.job.owm.data.City;
+import gadget.component.job.owm.data.CityParser;
 import gadget.component.owm.generated.TimeForecast;
 import gadget.component.owm.generated.Weatherdata;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,9 +17,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -35,12 +29,12 @@ import java.util.zip.GZIPInputStream;
 public class OWM extends Component implements Job{
 
     private static OWM instance;
-    private CloseableHttpClient client;
+    private OkHttpClient client;
     private Weatherdata weatherData;
-    private City[] city;
+    private List<City> city;
 
     public OWM(){
-        client = HttpClients.createDefault();
+        client = new OkHttpClient();
     }
 
     public static OWM getInstance(){
@@ -54,20 +48,21 @@ public class OWM extends Component implements Job{
             downloadCityList();
         }
         try {
-            String owmurl = getProperty("url").replace("$KEY",getProperty("key")).replace("$CITY",getCity(getProperty("city")).get_id()+"");
-            CloseableHttpResponse response = client.execute(new HttpGet(owmurl));
+            String owmurl = getProperty("url").replace("$KEY", getProperty("key")).replace("$CITY", instance.getCity(getProperty("city")).get_id() + "");
+            LOG.debug("OWM " + owmurl);
+            Request request = new Request.Builder().url(owmurl).build();
+            Response response = client.newCall(request).execute();
 
             JAXBContext jaxbContext = JAXBContext.newInstance("gadget.component.owm.generated");
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             URL url = getClass().getClassLoader().getResource("OpenWeatherMap.xsd");
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setSchema(schemaFactory.newSchema(url));
-            weatherData = (Weatherdata) unmarshaller.unmarshal(response.getEntity().getContent());
-            response.close();
+            weatherData = (Weatherdata) unmarshaller.unmarshal(response.body().byteStream());
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
-        System.out.println("Download OWM data finished");
+        LOG.info("finished download weather data");
     }
 
     public City getCity(String city) {
@@ -99,23 +94,23 @@ public class OWM extends Component implements Job{
 
     public void downloadCityList()
     {
-        StringWriter writer = new StringWriter();
         try {
-            CloseableHttpResponse response = client.execute(new HttpGet(getProperty("dlcity")));
-            GZIPInputStream inputStream = new GZIPInputStream(response.getEntity().getContent());
-            IOUtils.copy(inputStream, writer);
-            response.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            LOG.info("download city list");
+            Request request = new Request.Builder().url(getProperty("dlcity")).build();
+            LOG.debug("url " + request.urlString());
+            Response response = client.newCall(request).execute();
+            GZIPInputStream inputStream = new GZIPInputStream(response.body().byteStream());
 
-        Gson gson = new Gson();
-        //System.out.println(writer.toString().replace("\r","").replace("\n","").replace("}}{","}},{"));
-        city = gson.fromJson("["+writer.toString().replace("\r","").replace("\n","").replace("}}{","}},{")+"]", City[].class);
+            CityParser parser = new CityParser();
+            city = parser.parse(inputStream);
+            LOG.info("loaded Cities " + city.size());
+            inputStream.close();
+        } catch (IOException e) {
+            LOG.error("Problem while download city list", e);
+        }
     }
 
-    public City[] getCities() {
-        if(city==null) downloadCityList();
+    public List<City> getCities() {
         return city;
     }
 }

@@ -1,5 +1,8 @@
 package gadget.component;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,15 +13,17 @@ import java.util.Properties;
  */
 public class Component {
 
+    protected final Logger LOG;
     private final String file;
     private Properties properties = new Properties();
 
     public Component() {
+        LOG = LogManager.getLogger(getClass().getSimpleName());
         file = Component.class.getResource("/data.properties").getFile();
         try {
             properties.load(new FileInputStream(file));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Problem while Loading Configuration", e);
         }
     }
 
@@ -31,7 +36,7 @@ public class Component {
         try {
             properties.store(new FileOutputStream(file), "");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error("Problem while saving Configuration", e);
         }
     }
 }

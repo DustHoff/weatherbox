@@ -5,7 +5,7 @@ import gadget.component.api.data.Request;
 import gadget.component.api.data.Response;
 import gadget.component.api.data.SysInfoRequest;
 import gadget.component.api.data.SysInfoResponse;
-import gadget.component.owm.OWM;
+import gadget.component.job.owm.OWM;
 import gadget.component.owm.generated.TimeForecast;
 
 import java.lang.management.ManagementFactory;

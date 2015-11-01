@@ -1,4 +1,4 @@
-package gadget.component.owm.data;
+package gadget.component.job.owm.data;
 
 import com.google.gson.stream.JsonReader;
 

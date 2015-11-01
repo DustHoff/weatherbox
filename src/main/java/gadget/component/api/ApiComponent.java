@@ -21,7 +21,7 @@ public abstract class ApiComponent<T extends Request> extends Component {
     private final Type type;
     private Gson gson = new Gson();
 
-    public ApiComponent(){
+    public ApiComponent() {
         type = ((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0];
     }
@@ -30,10 +30,11 @@ public abstract class ApiComponent<T extends Request> extends Component {
 
     public abstract String getContext();
 
-    public final HttpHandler getHandler(){
+    public final HttpHandler getHandler() {
         return new HttpHandler() {
             public void handle(HttpExchange httpExchange) throws IOException {
 
+                LOG.info("receive request");
                 Response response;
                 try {
                     String method = httpExchange.getRequestMethod();
@@ -42,17 +43,24 @@ public abstract class ApiComponent<T extends Request> extends Component {
                         StringWriter writer = new StringWriter();
                         IOUtils.copy(httpExchange.getRequestBody(), writer);
                         request = gson.fromJson(writer.toString(), type);
-                    } else{
+                    } else {
                         request = new Request();
                     }
                     request.setRequestUrl(httpExchange.getRequestURI().getPath().substring(getContext().length()));
                     request.setMethod(method);
+
+                    LOG.debug("URL: " + request.getRequestUrl());
+                    LOG.debug("Method: " + request.getMethod());
+                    LOG.info("processing request");
                     response = handleRequest(request);
                 } catch (Exception e) {
                     response = new Response(e);
+                    LOG.error("Problem while processing API-Request", e);
                 }
+                LOG.info("prepare response");
                 String message = gson.toJson(response);
-                httpExchange.sendResponseHeaders(response.getCode(),0);
+                LOG.debug("Response: " + message);
+                httpExchange.sendResponseHeaders(response.getCode(), 0);
                 httpExchange.getResponseBody().write(message.getBytes());
                 httpExchange.close();
             }

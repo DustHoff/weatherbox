@@ -1,13 +1,15 @@
 package gadget.component.api.data;
 
-import gadget.component.owm.data.City;
+import gadget.component.job.owm.data.City;
+
+import java.util.List;
 
 /**
  * Created by Dustin on 03.10.2015.
  */
 public class WeatherResponse {
 
-    private City[] cities;
+    private List<City> cities;
     private String city;
     private String url;
     private String key;
@@ -90,11 +92,11 @@ public class WeatherResponse {
         this.dlcity = dlcity;
     }
 
-    public City[] getCities() {
+    public List<City> getCities() {
         return cities;
     }
 
-    public void setCities(City[] cities) {
+    public void setCities(List<City> cities) {
         this.cities = cities;
     }
 }
