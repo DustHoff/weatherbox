@@ -1,6 +1,9 @@
 package gadget.component.hardware;
 
-import com.tinkerforge.*;
+import com.tinkerforge.BrickServo;
+import com.tinkerforge.IPConnection;
+import com.tinkerforge.NotConnectedException;
+import com.tinkerforge.TimeoutException;
 
 /**
  * Created by Dustin on 03.09.2015.
@@ -37,20 +40,18 @@ public class Rain extends HardwareComponent {
         return position+"";
     }
 
-    @Override
-    public void setValue(String value) {
-        setValue(Integer.parseInt(value));
-    }
-
     public void setValue(int value) {
         position = value;
         try {
             device.setPosition(degree.servoNum, (short) value);
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            LOG.error("Problem while setting", e);
         }
+    }
+
+    @Override
+    public void setValue(String value) {
+        setValue(Integer.parseInt(value));
     }
 
 }

@@ -57,10 +57,8 @@ public class Clouds extends HardwareComponent {
                     fan.setPosition((short) 0, (short) 1000);
                     break;
             }
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            LOG.error("Problem while changing Cloudmode ", e);
         }
     }
 

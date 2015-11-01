@@ -56,10 +56,8 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
     private void setRGB(int index, short count, short[] red, short[] green, short[] blue) {
         try {
             device.setRGBValues(index, count, red, green, blue);
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (NotConnectedException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            LOG.error("Problem while changing sky color", e);
         }
     }
 
