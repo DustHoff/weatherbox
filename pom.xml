@@ -21,9 +21,13 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/job/owm/data/*</include>
-                                <include>**/api/data/*</include>
-                                <include>**/hardware/data/*</include>
+                                <include>gadget/component/job/owm/data/*</include>
+                                <include>gadget/component/job/owm/OWM.class</include>
+                                <include>gadget/component/api/data/*</include>
+                                <include>gadget/component/api/ApiComponent.class</include>
+                                <include>gadget/component/hardware/data/*</include>
+                                <include>gadget/component/hardware/HardwareComponent.class</include>
+                                <include>gadget/component/Component.class</include>
                             </includes>
                             <classifier>api</classifier>
                             <finalName>${project.artifactId}</finalName>
