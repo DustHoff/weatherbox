@@ -33,6 +33,7 @@ public class WeatherTest extends ApiRegistryTest{
         request.setUseClouds(response.isUseClouds());
         request.setUseSky(response.isUseSky());
         request.setUseRain(response.isUseRain());
+        request.setDelay(response.getDelay());
         Response r = startPostRequest("http://localhost:8080/weather",request);
         if(r.convert() instanceof Throwable){
             ((Throwable) r.convert()).printStackTrace();
