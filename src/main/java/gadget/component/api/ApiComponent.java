@@ -42,6 +42,7 @@ public abstract class ApiComponent<T extends Request> extends Component {
                     if (method.equalsIgnoreCase("post")) {
                         StringWriter writer = new StringWriter();
                         IOUtils.copy(httpExchange.getRequestBody(), writer);
+                        LOG.debug("Postdata: " + writer);
                         request = gson.fromJson(writer.toString(), type);
                     } else {
                         request = new Request();

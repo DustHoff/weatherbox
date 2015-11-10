@@ -19,6 +19,7 @@ public class WeatherResponse {
     private boolean useSky;
     private boolean useClouds;
     private boolean useRain;
+    private long delay;
 
     public String getCity() {
         return city;
@@ -98,5 +99,13 @@ public class WeatherResponse {
 
     public void setCities(List<City> cities) {
         this.cities = cities;
+    }
+
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 }

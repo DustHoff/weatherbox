@@ -36,6 +36,7 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
 
     @Override
     public String getValue() {
+        if (skyLightType == null) return "0,0,0";
         return skyLightType.getRed() + "," + skyLightType.getGreen() + "," + skyLightType.getBlue();
     }
 

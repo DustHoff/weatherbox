@@ -13,6 +13,7 @@ public class WeatherRequest extends Request {
     private boolean useSky;
     private boolean useClouds;
     private boolean useRain;
+    private long delay;
 
     public String getCity() {
         return city;
@@ -84,5 +85,13 @@ public class WeatherRequest extends Request {
 
     public void setDlcity(String dlcity) {
         this.dlcity = dlcity;
+    }
+
+    public long getDelay() {
+        return delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 }

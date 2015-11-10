@@ -24,25 +24,29 @@ import java.util.Calendar;
 public class WeatherUpdater extends Component implements Job {
     private final Clock clock;
 
-    public WeatherUpdater(Clock clock){
+    public WeatherUpdater(Clock clock) {
         this.clock = clock;
     }
 
-    public WeatherUpdater(){
+    public WeatherUpdater() {
         clock = Clock.systemDefaultZone();
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        LOG.info("start weather update");
         TimeForecast weather = OWM.getInstance().getWeather();
         if (weather == null) return;
 
         Weatherdata.Sun sun = OWM.getInstance().getSun();
 
-        if (getProperty("use.skylight").equals("true")) updateSkyLight(weather, sun);
+        if (getProperty("use.skylight").equals("true")) updateSkyLight(sun);
+        else LOG.info("Skylight update is disabled");
         if (getProperty("use.clouds").equals("true")) updateClouds(weather);
+        else LOG.info("Clouds update is disabled");
         if (getProperty("use.rain").equals("true")) updateRain(weather);
+        else LOG.info("Rain update is disabled");
 
-        System.out.println("finished Weatherupdate: " + weather.getTemperature().getValue() + "," +
+        LOG.debug("finished Weatherupdate: " + weather.getTemperature().getValue() + "," +
                 " Clouds:" + weather.getClouds().getAll() + "," +
                 " Rain:" + weather.getPrecipitation().getValue());
     }
@@ -52,7 +56,7 @@ public class WeatherUpdater extends Component implements Job {
         if (rain.getValue() == null) return;
         Rain component = (Rain) HardwareRegistry.get().getComponent("Rain");
         float data = rain.getValue().floatValue();
-        int percent = (int) (data *100/10f);
+        int percent = (int) (data * 100 / 10f);
         component.setValue(percent);
     }
 
@@ -62,19 +66,15 @@ public class WeatherUpdater extends Component implements Job {
         clouds.setValue(Integer.parseInt(data.getAll()));
     }
 
-    public void updateSkyLight(TimeForecast weather, Weatherdata.Sun sun) {
+    public void updateSkyLight(Weatherdata.Sun sun) {
         LocalTime now = LocalTime.now(clock);
         now = now.plusHours(Long.parseLong(getProperty("forecast")));
 
-        Calendar c = weather.getFrom().toGregorianCalendar();
-        LocalTime from = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-        c = weather.getTo().toGregorianCalendar();
-        LocalTime to = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-        c = sun.getRise().toGregorianCalendar();
+        Calendar c = sun.getRise().toGregorianCalendar();
         LocalTime sunrise = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
         c = sun.getSet().toGregorianCalendar();
         LocalTime sunset = LocalTime.of(c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE));
-        SkyLightType type = null;
+        SkyLightType type;
 
         if (sunrise.isBefore(now) && sunset.isAfter(now)) type = SkyLightType.DAY;
         else type = SkyLightType.NIGHT;
@@ -82,19 +82,17 @@ public class WeatherUpdater extends Component implements Job {
         /**
          sunrise start
          */
-        if (datediff(now, sunrise) < 90L && datediff(now, sunrise) > -90L) {
-            System.out.println("sunrise");
-            System.out.println("sunrise = " + sunrise + ",now = " + now + ",diff = " + datediff(now, sunrise));
-            if (datediff(now, sunrise) < 90L && datediff(now, sunrise) > 0L) {
-                long percent = ((datediff(now, sunrise) * 100L) / 90L);
-                percent = 100 - percent;
-                System.out.println("percent = " + percent);
+        if (delay(now, sunrise)) {
+            LOG.debug("time for sunrise");
+            if (delayHalf(now, sunrise)) {
+                LOG.debug("the sun is rising");
+                long percent = delayPercent(now, sunrise, false);
+                LOG.debug("percent " + percent);
                 type = SkyLightType.NIGHT.fade(SkyLightType.RISE, (int) percent);
-            }
-            if (datediff(now, sunrise) > -90L && datediff(now, sunrise) <= 0L) {
-                long percent = ((datediff(now, sunrise) * 100L) / 90L);
-                percent = percent * -1;
-                System.out.println("percent = " + percent);
+            } else {
+                LOG.debug("the day is coming");
+                long percent = delayPercent(now, sunrise, true);
+                LOG.debug("percent " + percent);
                 type = SkyLightType.RISE.fade(SkyLightType.DAY, (int) percent);
             }
         }
@@ -104,21 +102,17 @@ public class WeatherUpdater extends Component implements Job {
         /**
          sunset start
          */
-        if (datediff(now, sunset) < 90L && datediff(now, sunset) > -90L) {
-            System.out.println("sunset");
-            System.out.println("sunset = " + sunset + ", now = " + now + ", diff = " + datediff(now, sunset));
-            if (datediff(now, sunset) < 90L && datediff(now, sunset) > 0L) {
-                long percent = ((datediff(now, sunset) * 100L) / 90L);
-                percent = 100 - percent;
-                System.out.println("percent = " + percent);
+        if (delay(now, sunset)) {
+            LOG.debug("time for sunset");
+            if (delayHalf(now, sunset)) {
+                LOG.debug("the sun starts to set");
+                long percent = delayPercent(now, sunset, false);
+                LOG.debug("percent " + percent);
                 type = SkyLightType.DAY.fade(SkyLightType.RISE, (int) percent);
-            }
-
-            System.out.println("sunset = " + sunset + ", now = " + now + ", diff = " + datediff(now, sunset));
-            if (datediff(now, sunset) > -90L && datediff(now, sunset) <= 0L) {
-                long percent = ((datediff(now, sunset) * 100L) / 90L);
-                percent = percent * -1;
-                System.out.println("percent = " + percent);
+            } else {
+                LOG.debug("the night is coming");
+                long percent = delayPercent(now, sunset, true);
+                LOG.debug("percent " + percent);
                 type = SkyLightType.RISE.fade(SkyLightType.NIGHT, (int) percent);
             }
         }
@@ -126,11 +120,31 @@ public class WeatherUpdater extends Component implements Job {
          sunset end
          */
         ((SkyLight) HardwareRegistry.get().getComponent("SkyLight")).setSkyLightType(type);
-        System.out.println(type);
     }
 
     public long datediff(LocalTime one, LocalTime two) {
-        Duration between = Duration.between(one, two);
+        Duration between = Duration.between(two, one);
         return between.getSeconds() / 60;
+    }
+
+    public long datediffPositive(LocalTime one, LocalTime two) {
+        long diff = datediff(one, two);
+        return (diff > 0) ? diff : -diff;
+    }
+
+    public boolean delay(LocalTime one, LocalTime two) {
+        long delay = Long.parseLong(getProperty("delay"));
+        return datediff(one, two) < delay && datediff(one, two) >= 0;
+    }
+
+    public boolean delayHalf(LocalTime one, LocalTime two) {
+        long delay = Long.parseLong(getProperty("delay")) / 2;
+        return datediff(one, two) < delay && datediff(one, two) >= 0;
+    }
+
+    public int delayPercent(LocalTime one, LocalTime two, boolean offset) {
+        long delay = Long.parseLong(getProperty("delay")) / 2;
+        int percent = (int) (((datediffPositive(one, two) - (offset ? delay : 0)) * 100) / delay);
+        return percent;
     }
 }

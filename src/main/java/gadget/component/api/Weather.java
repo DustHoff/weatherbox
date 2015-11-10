@@ -23,6 +23,7 @@ public class Weather extends ApiComponent<WeatherRequest> {
             setProperties("use.clouds", data.isUseClouds() + "");
             setProperties("use.skylight", data.isUseSky() + "");
             setProperties("use.rain", data.isUseRain() + "");
+            setProperties("delay", data.getDelay() + "");
         }
         WeatherResponse response = new WeatherResponse();
         response.setCity(getProperty("city"));
@@ -34,6 +35,7 @@ public class Weather extends ApiComponent<WeatherRequest> {
         response.setUseSky(Boolean.parseBoolean(getProperty("use.skylight")));
         response.setUseClouds(Boolean.parseBoolean(getProperty("use.clouds")));
         response.setUseRain(Boolean.parseBoolean(getProperty("use.rain")));
+        response.setDelay(Long.parseLong(getProperty("delay")));
         if(OWM.getInstance()!=null)response.setCities(OWM.getInstance().getCities());
         return new Response(response);
     }

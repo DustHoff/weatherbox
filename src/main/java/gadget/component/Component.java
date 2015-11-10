@@ -3,7 +3,6 @@ package gadget.component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -13,18 +12,23 @@ import java.util.Properties;
  */
 public class Component {
 
+    private static Properties properties = new Properties();
+
+    static {
+        try {
+            properties.load(Component.class.getResourceAsStream("/data.properties"));
+        } catch (IOException e) {
+            LogManager.getRootLogger().error("Problem while Loading Configuration", e);
+        }
+    }
+
     protected final Logger LOG;
     private final String file;
-    private Properties properties = new Properties();
 
     public Component() {
         LOG = LogManager.getLogger(getClass().getSimpleName());
         file = Component.class.getResource("/data.properties").getFile();
-        try {
-            properties.load(new FileInputStream(file));
-        } catch (IOException e) {
-            LOG.error("Problem while Loading Configuration", e);
-        }
+
     }
 
     public String getProperty(String key) {
