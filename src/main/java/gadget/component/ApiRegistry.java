@@ -8,6 +8,9 @@ import org.reflections.Reflections;
 
 import java.net.InetSocketAddress;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Dustin on 27.09.2015.
@@ -47,7 +50,7 @@ public class ApiRegistry {
         LOG.info("starting");
         try {
             server = HttpServer.create(new InetSocketAddress(8080), 0);
-            server.setExecutor(null);
+            server.setExecutor(new ThreadPoolExecutor(10, 50, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(500, true)));
             load();
             server.start();
         } catch (Throwable e) {

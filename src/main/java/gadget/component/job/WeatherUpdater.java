@@ -41,8 +41,16 @@ public class WeatherUpdater extends Component implements Job {
 
         if (getProperty("use.skylight").equals("true")) updateSkyLight(sun);
         else LOG.info("Skylight update is disabled");
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+        }
         if (getProperty("use.clouds").equals("true")) updateClouds(weather);
         else LOG.info("Clouds update is disabled");
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+        }
         if (getProperty("use.rain").equals("true")) updateRain(weather);
         else LOG.info("Rain update is disabled");
 

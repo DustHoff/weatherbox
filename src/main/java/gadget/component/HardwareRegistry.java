@@ -57,7 +57,7 @@ public class HardwareRegistry implements IPConnection.EnumerateListener {
             LOG.info("connecting");
             connection = new IPConnection();
             connection.addEnumerateListener(this);
-            connection.connect("weatherbox", 4223);
+            connection.connect("localhost", 4223);
             connection.enumerate();
         } catch (Throwable e) {
             LOG.error("Problem while starting", e);
@@ -67,6 +67,10 @@ public class HardwareRegistry implements IPConnection.EnumerateListener {
     public void enumerate(String uid, String connectedUid, char position,
                           short[] hardwareVersion, short[] firmwareVersion,
                           int deviceIdentifier, short enumerationType) {
+        if (enumerationType != IPConnection.ENUMERATION_TYPE_AVAILABLE) {
+            LOG.warn("could not handle enumeration type " + enumerationType);
+            return;
+        }
         LOG.debug("Found new hardware");
         LOG.debug("uid = [" + uid + "], connectedUid = [" + connectedUid + "], position = [" + position + "], hardwareVersion = [" + hardwareVersion + "], firmwareVersion = [" + firmwareVersion + "], deviceIdentifier = [" + deviceIdentifier + "], enumerationType = [" + enumerationType + "]");
         for (HardwareComponent component : components) {

@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * Created by Dustin on 09.10.2015.
  */
-public class JobRegistry {
+public class JobRegistry extends Component {
 
     private static JobRegistry instance;
     private final Logger LOG;
@@ -44,6 +44,8 @@ public class JobRegistry {
             scheduler = StdSchedulerFactory.getDefaultScheduler();
             load();
             scheduler.start();
+            if (getProperty("mode") != null)
+                if (getProperty("mode").equalsIgnoreCase("true")) pause();
         } catch (SchedulerException e) {
             LOG.error("Problem while starting", e);
         }

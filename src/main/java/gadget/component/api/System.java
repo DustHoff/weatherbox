@@ -26,6 +26,7 @@ public class System extends ApiComponent<SysInfoRequest> {
             SysInfoRequest sys = (SysInfoRequest) request;
             if (sys.isMode()) JobRegistry.get().resume();
             else JobRegistry.get().pause();
+            setProperties("mode", sys.isMode() + "");
         }
 
         SysInfoResponse response = new SysInfoResponse();

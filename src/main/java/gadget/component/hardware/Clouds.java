@@ -45,7 +45,6 @@ public class Clouds extends HardwareComponent {
             switch (type) {
                 case NONE:
                     mister.setSelectedState((short) 1, false);
-                    BrickServo.Degree degree = fan.getDegree((short) 0);
                     fan.setPosition((short) 0, degree.max);
                     break;
                 case CLOUDY:
