@@ -27,6 +27,10 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
         device.addFrameRenderedListener(this);
         device.setFrameDuration(20);
         setRGB(new short[lednum], new short[lednum], new short[lednum]);
+        String color = getProperty("skylight.color");
+        if (color != null) {
+            setValue(color);
+        }
     }
 
     @Override
@@ -45,6 +49,7 @@ public class SkyLight extends HardwareComponent implements BrickletLEDStrip.Fram
         String[] rgb = value.split(",");
         skyLightType = SkyLightType.FADED;
         skyLightType.modify(Short.parseShort(rgb[0]), Short.parseShort(rgb[1]), Short.parseShort(rgb[2]));
+        setProperties("skylight.color", value);
     }
 
     private short[] getColorArray(short num) {

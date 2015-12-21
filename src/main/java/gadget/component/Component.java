@@ -28,6 +28,8 @@ public class Component {
     public Component() {
         LOG = LogManager.getLogger(getClass().getSimpleName());
         file = Component.class.getResource("/data.properties").getFile();
+        if (properties == null) LOG.error("cold not load properties");
+        if (properties.isEmpty()) LOG.error("properties is empty");
 
     }
 
@@ -36,6 +38,7 @@ public class Component {
     }
 
     public void setProperties(String key,String value){
+        LOG.debug("key = [" + key + "], value = [" + value + "]");
         properties.setProperty(key,value);
         try {
             properties.store(new FileOutputStream(file), "");

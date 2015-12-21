@@ -1,9 +1,9 @@
 package gadget.component.api;
 
 import gadget.component.HardwareRegistry;
-import gadget.component.api.data.AmbientRequest;
-import gadget.component.api.data.Response;
+import gadget.component.api.data.ComponentInfo;
 import gadget.component.hardware.Clouds;
+import gadget.component.hardware.HardwareComponent;
 import gadget.component.hardware.Rain;
 import gadget.component.hardware.SkyLight;
 import gadget.component.hardware.data.CloudType;
@@ -34,9 +34,8 @@ public class AmbientTest extends ApiRegistryTest {
 
     @Test
     public void simpleFailedRequest() throws Throwable {
-        Response response = startGetRequest("http://localhost:8080/ambient");
-        Assert.assertEquals(Boolean.class.getName(), response.getType());
-        Assert.assertFalse((Boolean) response.convert());
+        Boolean b = startGetRequest("http://localhost:8080/ambient", Boolean.class);
+        Assert.assertFalse(b);
     }
 
     @Test
@@ -45,10 +44,11 @@ public class AmbientTest extends ApiRegistryTest {
         when(HardwareRegistry.get().getComponent("clouds")).thenReturn(clouds);
         when(clouds.getValue()).thenReturn(CloudType.NONE.name());
 
-        Response response = startGetRequest("http://localhost:8080/ambient/clouds");
-        Assert.assertEquals(String.class.getName(), response.getType());
-        String value = (String) response.convert();
-        Assert.assertEquals(CloudType.NONE.name(), value);
+        HardwareComponent h = HardwareRegistry.get().getComponent("clouds");
+        Assert.assertNotNull(h);
+
+        String info = startGetRequest("http://localhost:8080/ambient/clouds", String.class);
+        Assert.assertEquals(CloudType.NONE.name(), info);
     }
 
     @Test
@@ -58,13 +58,12 @@ public class AmbientTest extends ApiRegistryTest {
         doCallRealMethod().when(clouds).setValue(anyString());
         doCallRealMethod().when(clouds).getValue();
 
-        AmbientRequest request = new AmbientRequest();
+        ComponentInfo request = new ComponentInfo();
         request.setComponent("clouds");
         request.setValue(CloudType.FOG.name());
 
-        Response response = startPostRequest("http://localhost:8080/ambient",request);
-        Assert.assertEquals(Boolean.class.getName(), response.getType());
-        Assert.assertTrue((Boolean) response.convert());
+        Boolean b = startPostRequest("http://localhost:8080/ambient", request, Boolean.class);
+        Assert.assertTrue(b);
     }
 
     @Test
@@ -73,10 +72,8 @@ public class AmbientTest extends ApiRegistryTest {
         when(HardwareRegistry.get().getComponent("rain")).thenReturn(rain);
         when(rain.getValue()).thenReturn("0");
 
-        Response response = startGetRequest("http://localhost:8080/ambient/rain");
-        Assert.assertEquals(String.class.getName(), response.getType());
-        String value = (String) response.convert();
-        Assert.assertEquals(0, Integer.parseInt(value));
+        String info = startGetRequest("http://localhost:8080/ambient/rain", String.class);
+        Assert.assertEquals(0, Integer.parseInt(info));
     }
 
     @Test
@@ -86,12 +83,11 @@ public class AmbientTest extends ApiRegistryTest {
         doCallRealMethod().when(rain).setValue(anyString());
         doCallRealMethod().when(rain).getValue();
 
-        AmbientRequest request = new AmbientRequest();
+        ComponentInfo request = new ComponentInfo();
         request.setComponent("rain");
         request.setValue("1000");
-        Response response = startPostRequest("http://localhost:8080/ambient/", request);
-        Assert.assertEquals(Boolean.class.getName(), response.getType());
-        Assert.assertTrue((Boolean) response.convert());
+        Boolean b = startPostRequest("http://localhost:8080/ambient/", request, Boolean.class);
+        Assert.assertTrue(b);
 
     }
 
@@ -101,10 +97,9 @@ public class AmbientTest extends ApiRegistryTest {
         when(HardwareRegistry.get().getComponent("skylight")).thenReturn(skyLight);
         when(skyLight.getValue()).thenReturn("0,0,0");
 
-        Response response = startGetRequest("http://localhost:8080/ambient/skylight");
-        Assert.assertEquals(String.class.getName(), response.getType());
-        String rgb = (String) response.convert();
-        Assert.assertEquals(3, rgb.split(",").length);
+        String info = startGetRequest("http://localhost:8080/ambient/skylight", String.class);
+        Assert.assertEquals(3, info.split(",").length);
+        Assert.assertEquals("0,0,0", info);
     }
 
     @Test
@@ -113,12 +108,11 @@ public class AmbientTest extends ApiRegistryTest {
         when(HardwareRegistry.get().getComponent("skylight")).thenReturn(skyLight);
         doCallRealMethod().when(skyLight).setValue(anyString());
         doCallRealMethod().when(skyLight).getSkyLightType();
-        AmbientRequest request = new AmbientRequest();
+        ComponentInfo request = new ComponentInfo();
         request.setComponent("skylight");
         request.setValue("0,100,200");
-        Response response = startPostRequest("http://localhost:8080/ambient/", request);
-        Assert.assertEquals(Boolean.class.getName(), response.getType());
-        Assert.assertTrue((Boolean) response.convert());
+        Boolean b = startPostRequest("http://localhost:8080/ambient/", request, Boolean.class);
+        Assert.assertTrue(b);
         SkyLightType type = skyLight.getSkyLightType();
         Assert.assertEquals(0, type.getRed());
         Assert.assertEquals(100, type.getGreen());

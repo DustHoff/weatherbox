@@ -1,9 +1,11 @@
 package gadget.component.api.data;
 
+import java.io.Serializable;
+
 /**
  * Created by Dustin on 03.10.2015.
  */
-public class WeatherRequest extends Request {
+public class Config implements Serializable {
     private String city;
     private String url;
     private String key;

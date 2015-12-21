@@ -1,28 +1,27 @@
 package gadget.component.api;
 
 import gadget.component.HardwareRegistry;
-import gadget.component.api.data.AmbientRequest;
-import gadget.component.api.data.Request;
-import gadget.component.api.data.Response;
+import gadget.component.api.data.ComponentInfo;
 import gadget.component.hardware.HardwareComponent;
 
 /**
  * Created by Dustin on 28.09.2015.
  */
-public class Ambient extends ApiComponent<AmbientRequest> {
+public class Ambient extends ApiComponent<ComponentInfo> {
 
     @Override
-    public Response handleRequest(Request request) throws Exception {
-        if (request instanceof AmbientRequest) {
-            HardwareComponent component = HardwareRegistry.get().getComponent(((AmbientRequest) request).getComponent());
-            component.setValue(((AmbientRequest) request).getValue());
-            return new Response(Boolean.TRUE);
-        } else if (!request.getRequestUrl().isEmpty()) {
-            HardwareComponent component = HardwareRegistry.get().getComponent(request.getRequestUrl().replace("/", ""));
-            if(component==null)throw new Exception("Unknown Hardware");
-            return new Response(component.getValue());
+    public Object handleRequest(ComponentInfo request, String url) throws Exception {
+        if (request instanceof ComponentInfo) {
+            HardwareComponent component = HardwareRegistry.get().getComponent(request.getComponent());
+            component.setValue(request.getValue());
+            return true;
+        } else if (!url.isEmpty()) {
+            if (url.startsWith("/")) url = url.substring(1);
+            HardwareComponent component = HardwareRegistry.get().getComponent(url);
+            if (component == null) throw new Exception("Unknown Hardware " + url);
+            return component.getValue();
         }
-        return new Response(Boolean.FALSE);
+        return false;
     }
 
     @Override

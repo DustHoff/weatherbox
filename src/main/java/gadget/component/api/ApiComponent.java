@@ -1,11 +1,10 @@
 package gadget.component.api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import gadget.component.Component;
-import gadget.component.api.data.Request;
-import gadget.component.api.data.Response;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -16,17 +15,19 @@ import java.lang.reflect.Type;
 /**
  * Created by Dustin on 27.09.2015.
  */
-public abstract class ApiComponent<T extends Request> extends Component {
+public abstract class ApiComponent<T> extends Component {
 
     private final Type type;
-    private Gson gson = new Gson();
+    private final Gson gson;
 
     public ApiComponent() {
         type = ((ParameterizedType) getClass()
                 .getGenericSuperclass()).getActualTypeArguments()[0];
+
+        gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public abstract Response handleRequest(Request request) throws Exception;
+    public abstract Object handleRequest(T request, String requestMethod) throws Exception;
 
     public abstract String getContext();
 
@@ -35,34 +36,37 @@ public abstract class ApiComponent<T extends Request> extends Component {
             public void handle(HttpExchange httpExchange) throws IOException {
 
                 LOG.info("receive request");
-                Response response;
+                Object response;
                 try {
-                    String method = httpExchange.getRequestMethod();
-                    Request request;
-                    if (method.equalsIgnoreCase("post")) {
+                    T request;
+                    if (httpExchange.getRequestMethod().equalsIgnoreCase("post")) {
                         StringWriter writer = new StringWriter();
                         IOUtils.copy(httpExchange.getRequestBody(), writer);
                         LOG.debug("Postdata: " + writer);
                         request = gson.fromJson(writer.toString(), type);
                     } else {
-                        request = new Request();
+                        request = null;
                     }
-                    request.setRequestUrl(httpExchange.getRequestURI().getPath().substring(getContext().length()));
-                    request.setMethod(method);
 
-                    LOG.debug("URL: " + request.getRequestUrl());
-                    LOG.debug("Method: " + request.getMethod());
+                    LOG.debug("URL: " + httpExchange.getRequestURI().getPath());
+                    LOG.debug("Method: " + httpExchange.getRequestMethod());
                     LOG.info("processing request");
-                    response = handleRequest(request);
+                    response = handleRequest(request, httpExchange.getRequestURI().getPath().substring(getContext().length()));
                 } catch (Exception e) {
-                    response = new Response(e);
+                    response = null;
                     LOG.error("Problem while processing API-Request", e);
                 }
-                LOG.info("prepare response");
-                String message = gson.toJson(response);
-                LOG.debug("Response: " + message);
-                httpExchange.sendResponseHeaders(response.getCode(), 0);
-                httpExchange.getResponseBody().write(message.getBytes());
+                if (response != null) {
+                    LOG.info("prepare response");
+                    StringWriter writer = new StringWriter();
+                    gson.toJson(response, writer);
+                    LOG.debug("Response: " + writer.toString());
+                    httpExchange.sendResponseHeaders(200, writer.toString().length());
+                    httpExchange.getResponseBody().write(writer.toString().getBytes());
+                } else {
+                    httpExchange.sendResponseHeaders(500, 0);
+
+                }
                 httpExchange.close();
             }
         };
