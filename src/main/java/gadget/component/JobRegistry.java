@@ -1,9 +1,11 @@
 package gadget.component;
 
+import gadget.component.job.owm.OWM;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.reflections.Reflections;
 
 import java.util.Set;
@@ -53,7 +55,11 @@ public class JobRegistry extends Component {
 
     public void pause() {
         try {
-            scheduler.pauseAll();
+            for (String group : scheduler.getJobGroupNames()) {
+                for (JobKey key : scheduler.getJobKeys(GroupMatcher.<JobKey>groupEquals(group))) {
+                    if (!key.getName().equalsIgnoreCase(OWM.class.getSimpleName())) scheduler.pauseJob(key);
+                }
+            }
             pause = true;
         } catch (SchedulerException e) {
             LOG.error("Problem while pausing", e);
