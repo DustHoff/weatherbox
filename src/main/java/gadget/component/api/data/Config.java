@@ -12,10 +12,11 @@ public class Config implements Serializable {
     private String dlcity;
     private int forecast;
     private int skyled;
-    private boolean useSky;
-    private boolean useClouds;
-    private boolean useRain;
+    private Boolean useSky;
+    private Boolean useClouds;
+    private Boolean useRain;
     private long delay;
+    private Boolean autoupdate;
 
     public String getCity() {
         return city;
@@ -57,27 +58,27 @@ public class Config implements Serializable {
         this.skyled = skyled;
     }
 
-    public boolean isUseSky() {
+    public Boolean isUseSky() {
         return useSky;
     }
 
-    public void setUseSky(boolean useSky) {
+    public void setUseSky(Boolean useSky) {
         this.useSky = useSky;
     }
 
-    public boolean isUseClouds() {
+    public Boolean isUseClouds() {
         return useClouds;
     }
 
-    public void setUseClouds(boolean useClouds) {
+    public void setUseClouds(Boolean useClouds) {
         this.useClouds = useClouds;
     }
 
-    public boolean isUseRain() {
+    public Boolean isUseRain() {
         return useRain;
     }
 
-    public void setUseRain(boolean useRain) {
+    public void setUseRain(Boolean useRain) {
         this.useRain = useRain;
     }
 
@@ -95,5 +96,13 @@ public class Config implements Serializable {
 
     public void setDelay(long delay) {
         this.delay = delay;
+    }
+
+    public Boolean isAutoupdate() {
+        return autoupdate;
+    }
+
+    public void setAutoupdate(Boolean autoupdate) {
+        this.autoupdate = autoupdate;
     }
 }

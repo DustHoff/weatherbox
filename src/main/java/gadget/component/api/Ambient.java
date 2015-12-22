@@ -11,8 +11,11 @@ public class Ambient extends ApiComponent<ComponentInfo> {
 
     @Override
     public Object handleRequest(ComponentInfo request, String url) throws Exception {
-        if (request instanceof ComponentInfo) {
+        if (request != null) {
+            LOG.debug("Hardware "+request.getComponent());
+            LOG.debug("Value "+request.getValue());
             HardwareComponent component = HardwareRegistry.get().getComponent(request.getComponent());
+            LOG.debug(component);
             component.setValue(request.getValue());
             return true;
         } else if (!url.isEmpty()) {

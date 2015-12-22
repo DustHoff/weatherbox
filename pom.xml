@@ -28,6 +28,7 @@
                                 <include>gadget/component/hardware/data/*</include>
                                 <include>gadget/component/hardware/HardwareComponent.class</include>
                                 <include>gadget/component/Component.class</include>
+                                <include>gadget/weatherbox/Client.class</include>
                             </includes>
                             <classifier>api</classifier>
                             <finalName>${project.artifactId}</finalName>

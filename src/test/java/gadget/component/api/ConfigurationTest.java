@@ -10,18 +10,18 @@ import org.junit.Test;
 public class ConfigurationTest extends ApiRegistryTest {
 
     @Test
-    public void getCity() throws Throwable{
-        Config response = startGetRequest("http://localhost:8080/config", Config.class);
+    public void getCity() throws Throwable {
+        Config response = client.getConfig();
         Assert.assertNotNull(response);
         Assert.assertTrue(response instanceof Config);
         Assert.assertEquals("Osnabruck", response.getCity());
     }
 
     @Test
-    public void setCity() throws Throwable{
-        Config config = startGetRequest("http://localhost:8080/config", Config.class);
+    public void setCity() throws Throwable {
+        Config config = client.getConfig();
         config.setCity("Berlin");
-        config = startPostRequest("http://localhost:8080/config", config, Config.class);
+        config = client.setConfig(config);
         Assert.assertEquals("Berlin", config.getCity());
     }
 }
