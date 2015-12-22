@@ -15,7 +15,6 @@ public class Ambient extends ApiComponent<ComponentInfo> {
             LOG.debug("Hardware "+request.getComponent());
             LOG.debug("Value "+request.getValue());
             HardwareComponent component = HardwareRegistry.get().getComponent(request.getComponent());
-            LOG.debug(component);
             component.setValue(request.getValue());
             return true;
         } else if (!url.isEmpty()) {
