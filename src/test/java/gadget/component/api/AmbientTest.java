@@ -8,11 +8,8 @@ import gadget.component.hardware.SkyLight;
 import gadget.component.hardware.data.CloudType;
 import gadget.component.hardware.data.SkyLightType;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import java.lang.reflect.Field;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -22,14 +19,6 @@ import static org.mockito.Mockito.when;
  * Created by Dustin on 03.10.2015.
  */
 public class AmbientTest extends ApiRegistryTest {
-
-    @Before
-    public void mockHardwareRegistry() throws Throwable {
-        HardwareRegistry registry = Mockito.mock(HardwareRegistry.class);
-        Field instance = HardwareRegistry.class.getDeclaredField("instance");
-        instance.setAccessible(true);
-        instance.set(registry, registry);
-    }
 
     @Test
     public void getClouds() throws Throwable {

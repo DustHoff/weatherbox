@@ -3,6 +3,7 @@ package gadget.weatherbox;
 import com.google.gson.Gson;
 import com.squareup.okhttp.*;
 import gadget.component.api.Ambient;
+import gadget.component.api.CitySearch;
 import gadget.component.api.Configuration;
 import gadget.component.api.WeatherInfo;
 import gadget.component.api.data.ComponentInfo;
@@ -13,10 +14,12 @@ import gadget.component.hardware.Rain;
 import gadget.component.hardware.SkyLight;
 import gadget.component.hardware.data.CloudType;
 import gadget.component.hardware.data.SkyLightType;
+import gadget.component.job.owm.data.City;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Created by Dustin on 22.12.2015.
@@ -69,6 +72,18 @@ public class Client {
         return postRequest("/"+ Configuration.class.getSimpleName(), Config.class, config);
     }
 
+    public void enableAutoUpdate() {
+        Config config = getConfig();
+        config.setAutoupdate(true);
+        setConfig(config);
+    }
+
+    public void disableAutoUpdate() {
+        Config config = getConfig();
+        config.setAutoupdate(false);
+        setConfig(config);
+    }
+
     public CloudType getClouds() {
         String clouds = getRequest("/"+ Ambient.class.getSimpleName()+"/"+Clouds.class.getSimpleName(), String.class);
         return CloudType.valueOf(clouds);
@@ -104,5 +119,10 @@ public class Client {
         info.setComponent(Rain.class.getSimpleName());
         info.setValue(rain+"");
         return postRequest("/"+ Ambient.class.getSimpleName(), Boolean.class, info);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<City> searchCity(String name){
+        return postRequest("/"+ CitySearch.class.getSimpleName(),List.class,name);
     }
 }

@@ -7,19 +7,10 @@ import java.io.Serializable;
  */
 public class Weather implements Serializable {
 
-    private boolean autoUpdate;
     private String temperature;
     private String clouds;
     private String precipitation;
     private String humidity;
-
-    public boolean isAutoUpdate() {
-        return autoUpdate;
-    }
-
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
-    }
 
     public String getTemperature() {
         return temperature;

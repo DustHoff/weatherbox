@@ -24,4 +24,18 @@ public class ConfigurationTest extends ApiRegistryTest {
         config = client.setConfig(config);
         Assert.assertEquals("Berlin", config.getCity());
     }
+
+    @Test
+    public void enableAutoUpdate() throws Throwable {
+        client.enableAutoUpdate();
+        Config config = client.getConfig();
+        Assert.assertTrue(config.isAutoupdate());
+    }
+
+    @Test
+    public void disableAutoUpdate() throws Throwable {
+        client.disableAutoUpdate();
+        Config config = client.getConfig();
+        Assert.assertFalse(config.isAutoupdate());
+    }
 }

@@ -20,6 +20,7 @@ public class Configuration extends ApiComponent<Config> {
             setProperties("use.skylight", data.isUseSky() + "");
             setProperties("use.rain", data.isUseRain() + "");
             setProperties("delay", data.getDelay() + "");
+            setProperties("autoupdate",data.isAutoupdate()+"");
         }
         Config response = new Config();
         response.setCity(getProperty("city"));
@@ -32,6 +33,7 @@ public class Configuration extends ApiComponent<Config> {
         response.setUseClouds(Boolean.parseBoolean(getProperty("use.clouds")));
         response.setUseRain(Boolean.parseBoolean(getProperty("use.rain")));
         response.setDelay(Long.parseLong(getProperty("delay")));
+        response.setAutoupdate(Boolean.parseBoolean(getProperty("autoupdate")));
         return response;
     }
 }

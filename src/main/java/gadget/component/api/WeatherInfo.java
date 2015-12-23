@@ -1,6 +1,5 @@
 package gadget.component.api;
 
-import gadget.component.JobRegistry;
 import gadget.component.api.data.Weather;
 import gadget.component.job.owm.OWM;
 import gadget.component.owm.generated.TimeForecast;
@@ -11,15 +10,8 @@ import gadget.component.owm.generated.TimeForecast;
 public class WeatherInfo extends ApiComponent<Boolean> {
     @Override
     public Object handleRequest(Boolean request, String url) throws Exception {
-        if (request != null) {
-            if (request) JobRegistry.get().resume();
-            else JobRegistry.get().pause();
-            setProperties("mode", request.booleanValue() + "");
-        }
-
         Weather response = new Weather();
-        response.setAutoUpdate(!JobRegistry.get().isPaused());
-        if (!JobRegistry.get().isPaused() && OWM.getInstance() != null) {
+        if (OWM.getInstance() != null) {
             TimeForecast weather = OWM.getInstance().getWeather();
             TimeForecast.Temperature temp = weather.getTemperature();
             response.setTemperature(temp.getMin() + " - " + temp.getMax() + " " + temp.getUnit());
