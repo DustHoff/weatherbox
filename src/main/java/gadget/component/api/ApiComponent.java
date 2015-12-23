@@ -36,7 +36,7 @@ public abstract class ApiComponent<T> extends Component {
     public final HttpHandler getHandler() {
         return new HttpHandler() {
             public void handle(HttpExchange httpExchange) throws IOException {
-
+                long start = System.currentTimeMillis();
                 LOG.info("receive request");
                 Object response;
                 try {
@@ -70,6 +70,7 @@ public abstract class ApiComponent<T> extends Component {
 
                 }
                 httpExchange.close();
+                LOG.debug("Took "+(System.currentTimeMillis()-start)+"ms");
             }
         };
     }
