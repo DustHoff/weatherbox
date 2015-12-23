@@ -34,9 +34,4 @@ public class Configuration extends ApiComponent<Config> {
         response.setDelay(Long.parseLong(getProperty("delay")));
         return response;
     }
-
-    @Override
-    public String getContext() {
-        return "/config";
-    }
 }

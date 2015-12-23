@@ -8,7 +8,7 @@ import gadget.component.owm.generated.TimeForecast;
 /**
  * Created by Dustin on 09.10.2015.
  */
-public class System extends ApiComponent<Boolean> {
+public class WeatherInfo extends ApiComponent<Boolean> {
     @Override
     public Object handleRequest(Boolean request, String url) throws Exception {
         if (request != null) {
@@ -28,10 +28,5 @@ public class System extends ApiComponent<Boolean> {
             response.setPrecipitation(weather.getPrecipitation().getValue() + " " + weather.getPrecipitation().getUnit());
         }
         return response;
-    }
-
-    @Override
-    public String getContext() {
-        return "/system";
     }
 }

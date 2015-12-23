@@ -29,7 +29,9 @@ public abstract class ApiComponent<T> extends Component {
 
     public abstract Object handleRequest(T request, String requestMethod) throws Exception;
 
-    public abstract String getContext();
+    public final String getContext(){
+        return "/"+getClass().getSimpleName();
+    }
 
     public final HttpHandler getHandler() {
         return new HttpHandler() {

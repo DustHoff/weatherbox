@@ -25,9 +25,4 @@ public class Ambient extends ApiComponent<ComponentInfo> {
         }
         return false;
     }
-
-    @Override
-    public String getContext() {
-        return "/ambient";
-    }
 }
