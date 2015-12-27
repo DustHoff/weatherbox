@@ -27,6 +27,7 @@ public class ApiRegistryTest {
 
     @AfterClass
     public static void stop() throws Throwable {
+        Thread.sleep(5000);
         ApiRegistry.get().stop();
     }
 
