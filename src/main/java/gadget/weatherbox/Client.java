@@ -2,16 +2,9 @@ package gadget.weatherbox;
 
 import com.google.gson.Gson;
 import com.squareup.okhttp.*;
-import gadget.component.api.Ambient;
-import gadget.component.api.CitySearch;
-import gadget.component.api.Configuration;
-import gadget.component.api.WeatherInfo;
 import gadget.component.api.data.ComponentInfo;
 import gadget.component.api.data.Config;
 import gadget.component.api.data.Weather;
-import gadget.component.hardware.Clouds;
-import gadget.component.hardware.Rain;
-import gadget.component.hardware.SkyLight;
 import gadget.component.hardware.data.CloudType;
 import gadget.component.hardware.data.SkyLightType;
 import gadget.component.job.owm.data.City;
@@ -61,15 +54,15 @@ public class Client {
     }
 
     public Weather getWeather() {
-        return getRequest("/"+ WeatherInfo.class.getSimpleName(), Weather.class);
+        return getRequest("/WeatherInfo", Weather.class);
     }
 
     public Config getConfig() {
-        return getRequest("/"+ Configuration.class.getSimpleName(), Config.class);
+        return getRequest("/Configuration", Config.class);
     }
 
     public Config setConfig(Config config) {
-        return postRequest("/"+ Configuration.class.getSimpleName(), Config.class, config);
+        return postRequest("/Configuration", Config.class, config);
     }
 
     public void enableAutoUpdate() {
@@ -85,19 +78,19 @@ public class Client {
     }
 
     public CloudType getClouds() {
-        String clouds = getRequest("/"+ Ambient.class.getSimpleName()+"/"+Clouds.class.getSimpleName(), String.class);
+        String clouds = getRequest("/Ambient/Clouds", String.class);
         return CloudType.valueOf(clouds);
     }
 
     public Boolean setClouds(CloudType clouds) {
         ComponentInfo info = new ComponentInfo();
         info.setValue(clouds.name());
-        info.setComponent(Clouds.class.getSimpleName());
-        return postRequest("/"+ Ambient.class.getSimpleName(), Boolean.class, info);
+        info.setComponent("Clouds");
+        return postRequest("/Ambient", Boolean.class, info);
     }
 
     public SkyLightType getSkyLight() {
-        String[] rgb = getRequest("/"+ Ambient.class.getSimpleName()+"/"+SkyLight.class.getSimpleName(), String.class).split(",");
+        String[] rgb = getRequest("/Ambient/SkyLight", String.class).split(",");
         SkyLightType type = SkyLightType.FADED;
         type.modify(Short.parseShort(rgb[0]), Short.parseShort(rgb[1]), Short.parseShort(rgb[2]));
         return type;
@@ -105,24 +98,24 @@ public class Client {
 
     public Boolean setSkyLight(SkyLightType type) {
         ComponentInfo info = new ComponentInfo();
-        info.setComponent(SkyLight.class.getSimpleName());
+        info.setComponent("SkyLight");
         info.setValue(type.getRed() + "," + type.getGreen() + "," + type.getBlue());
-        return postRequest("/"+ Ambient.class.getSimpleName(), Boolean.class, info);
+        return postRequest("/Ambient", Boolean.class, info);
     }
 
     public int getRain(){
-        return getRequest("/"+ Ambient.class.getSimpleName()+"/"+Rain.class.getSimpleName(),Integer.class);
+        return getRequest("/Ambient/Rain",Integer.class);
     }
 
     public Boolean setRain(int rain){
         ComponentInfo info = new ComponentInfo();
-        info.setComponent(Rain.class.getSimpleName());
+        info.setComponent("Rain");
         info.setValue(rain+"");
-        return postRequest("/"+ Ambient.class.getSimpleName(), Boolean.class, info);
+        return postRequest("/Ambient", Boolean.class, info);
     }
 
     @SuppressWarnings("unchecked")
     public List<City> searchCity(String name){
-        return postRequest("/"+ CitySearch.class.getSimpleName(),List.class,name);
+        return postRequest("/CitySearch",List.class,name);
     }
 }
