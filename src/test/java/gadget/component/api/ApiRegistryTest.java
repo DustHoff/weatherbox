@@ -22,6 +22,9 @@ public class ApiRegistryTest {
 
     @BeforeClass
     public static void start() throws Throwable {
+        OWM owm = new OWM();
+        owm.execute(null);
+        owm.getCities();
         ApiRegistry.get().start();
     }
 
