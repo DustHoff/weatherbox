@@ -81,6 +81,8 @@
                 <version>2.19</version>
                 <configuration>
                     <!-- <skipAfterFailureCount>1</skipAfterFailureCount>-->
+                    <forkCount>0</forkCount>
+                    <forkMode>once</forkMode>
                 </configuration>
             </plugin>
         </plugins>

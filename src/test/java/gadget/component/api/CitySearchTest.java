@@ -15,7 +15,7 @@ public class CitySearchTest extends ApiRegistryTest {
     public void simpleSearch() throws Throwable {
         List<City> result = client.searchCity(null);
         Assert.assertNotNull(result);
-        Assert.assertEquals(10,result.size());
+        Assert.assertEquals(0,result.size());
     }
     @Test
     public void searchOsnabrueck() throws Throwable {

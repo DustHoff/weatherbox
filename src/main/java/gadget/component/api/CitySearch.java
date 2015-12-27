@@ -22,7 +22,7 @@ public class CitySearch extends ApiComponent<String> {
                 if (city.getName().matches(request + ".*")) result.add(city);
                 if (result.size() > 10) break;
             }
-        } else result = citylist.subList(0, 10);
+        }else return Collections.emptyList();
         return result;
     }
 }
